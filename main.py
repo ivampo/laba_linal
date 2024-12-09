@@ -49,6 +49,7 @@ class CSR():
     def sled(self):
         if self.n != self.m:
             print("След можно вычислить только для квадратных матриц.")
+            raise ValueError
         sled = 0
         #проходимся по каждой строке и ищем число на главной диагонали
         for i in range(self.n):
@@ -64,6 +65,8 @@ class CSR():
         return sled
 
     def get_elem(self, i, j):
+        if type(i) != int or type(j) != int or i <= 0 or j <= 0 or i > self.n or j > self.n:
+            raise ValueError
         try:
             #ищем индекс столбца нужного нам элемента
             c = self.ind[self.indptr[i - 1] - 1:self.indptr[i] - 1].index(j - 1)
@@ -78,6 +81,7 @@ class CSR():
         try:
             for i in range(len(self.data)):
                 self.data[i] = self.data[i] * a
+            return self
         except ValueError:
             print('умножаем только на число или матрицу')
             raise ValueError
@@ -86,11 +90,11 @@ class CSR():
         #проверка
         if type(other) != CSR:
             print('Складываем только с матрицей')
-            return None
+            raise ValueError
         #и еще проверка
         if self.n != other.n or self.m != other.m:
             print('ошибка размеров')
-            return None
+            raise ValueError
         #задаем базу
         ans_data = []
         ans_ind = []
@@ -125,16 +129,16 @@ class CSR():
 
     # по идее никогда не сработает, но пусть будет
     def __radd__(self, other):
-        self.__add__(other)
+        return self.__add__(other)
 
     def __mul__(self, other):
         #проверяем матрица ли это
         if type(other) != CSR:
-            self.mul_scalar(other)
+            return self.mul_scalar(other)
         # проверяем размерчики
         if self.m != other.n:
             print('Матрицы не подходят по размеру')
-            return None
+            raise ValueError
         # задаем базу
         ans_data = []
         ans_ind = []
@@ -145,9 +149,9 @@ class CSR():
             col_other_data = {}
             for row in range(other.n):
                 # берем смотрим элементы строчки и ищем с нужным стобцом
-                for ind_other in range(other.indptr[row] - 1, self.indptr[row + 1] - 1):
+                for ind_other in range(other.indptr[row] - 1, other.indptr[row + 1] - 1):
                     if other.ind[ind_other] == j:
-                        col_other_data[row] = self.data[ind_other]
+                        col_other_data[row] = other.data[ind_other]
                         break
             columns.append(col_other_data)
         #начинаем умножение
@@ -179,14 +183,24 @@ class CSR():
 
     def __rmul__(self, other):
         # т.к умножается всегда левая на правую, перенаправляем на скаляр
-        self.mul_scalar(other)
+        return self.mul_scalar(other)
 
-def determinant(matrix):
-    if len(matrix) != len(matrix[0]):
-        print('Определитель считается на квадратных матриц')
-        return None
+def determinant(matrix=None):
+    if matrix is None:
+        n = int(input())
+        _ = int(input())
+        matrix = []
+        for i in range(n):
+            matrix.append(list(map(int, input().split())))
+    try:
+        if len(matrix) != len(matrix[0]):
+            print('Определитель считается только для квадратных матриц')
+    except Exception:
+        raise ValueError
     det = 0
     # считаем определитель для матрицы 2x2
+    if len(matrix) == 1:
+        return matrix[0][0]
     if len(matrix) == 2 and len(matrix[0]) == 2:
         return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0]
     #функция для удаления строки и столбца для подсчета через минор
@@ -208,4 +222,3 @@ def determinant(matrix):
         # пользуемся формулой для подсчета определителя
         det += (-1)**(column)*i*determinant(drop_matrix(matrix,0, column))
     return det
-
