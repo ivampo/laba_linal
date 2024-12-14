@@ -182,7 +182,12 @@ class CSR():
         # т.к умножается всегда левая на правую, перенаправляем на скаляр
         return self.mul_scalar(other)
 
-def determinant(matrix=None):
+
+def determinant(matrix):
+    print(a:= calculate_determinant(matrix))
+    print('да' if a != 0 else 'нет')
+
+def calculate_determinant(matrix=None):
     if matrix is None:
         n = int(input())
         _ = int(input())
@@ -218,5 +223,4 @@ def determinant(matrix=None):
     for column, i in enumerate(matrix[0]):
         # пользуемся формулой для подсчета определителя
         det += (-1)**(column)*i*determinant(drop_matrix(matrix,0, column))
-    print(det)
-    print('да' if det!= 0 else 'нет')
+    return det
