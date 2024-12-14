@@ -183,9 +183,10 @@ class CSR():
         return self.mul_scalar(other)
 
 
-def determinant(matrix):
+def determinant(matrix=None):
     print(a:= calculate_determinant(matrix))
     print('да' if a != 0 else 'нет')
+    return a
 
 def calculate_determinant(matrix=None):
     if matrix is None:
