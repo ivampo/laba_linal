@@ -1,6 +1,3 @@
-from pprint import pprint
-
-
 class CSR():
     def __init__(self, matrix=None):
         self.matrix_in_csr(matrix)
@@ -221,4 +218,5 @@ def determinant(matrix=None):
     for column, i in enumerate(matrix[0]):
         # пользуемся формулой для подсчета определителя
         det += (-1)**(column)*i*determinant(drop_matrix(matrix,0, column))
-    return det
+    print(det)
+    print('да' if det!= 0 else 'нет')
